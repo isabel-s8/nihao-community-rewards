@@ -1,0 +1,5 @@
+git_url("https://github.com/isabel-s8/lemon-community-rewards.git")
+git_branch("certificates")
+storage_mode("git")
+type("appstore")
+app_identifier(["com.isabelyang.lemoncommunityrewards"])
