@@ -1,0 +1,14 @@
+{
+  "name": "lemon-community-rewards",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lemon Community Rewards discount card app",
+  "scripts": {
+    "sync": "cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor/cli": "8.5.0",
+    "@capacitor/core": "8.5.0",
+    "@capacitor/ios": "8.5.0"
+  }
+}

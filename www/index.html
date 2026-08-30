@@ -1,0 +1,489 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Community Card</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="device">
+
+<!-- SPLASH -->
+<div class="splash" id="splash">
+  <img class="splash-logo" src="lemon-logo.png" alt="Community Card">
+</div>
+
+<!-- MAIN APP -->
+<div class="screen active" id="s-main">
+  <div class="app-wrap">
+
+    <!-- HOME -->
+    <div class="tab-pane active" id="pane-home">
+      <div class="card-tab">
+        <div class="home-top">
+          <button class="inbox-btn" id="inboxBtn" onclick="openInbox()" aria-label="Inbox">
+            <i class="ti ti-inbox"></i>
+            <span class="inbox-dot" id="inboxDot"></span>
+          </button>
+          <div class="seg">
+            <button class="seg-btn on" id="segEn" onclick="setLang('en')">English</button>
+            <button class="seg-btn" id="segZh" onclick="setLang('zh')">中文</button>
+          </div>
+        </div>
+        <div class="dig-card">
+          <div class="dc-r1"></div><div class="dc-r2"></div><div class="dc-gold"></div>
+          <div class="dc-top">
+            <img class="logo-wsm" src="lemon-logo.png" alt="Community Card">
+          </div>
+          <div class="dc-valid" data-i18n="dc_valid">Valid Jan 1 &ndash; Dec 31, 2026</div>
+          <div class="dc-holder" data-i18n="dc_holder">Community Fundraising Card</div>
+        </div>
+        <div class="home-desc" data-i18n="home_desc">Placeholder description: The Community Fundraising Card gives you exclusive discounts at participating restaurants across DFW, while supporting a great cause. Replace this text with a real description of the card.</div>
+        <div class="sec-title" style="margin-top:20px" data-i18n="about_card">About the card</div>
+        <div class="info-box">
+          <i class="ti ti-discount"></i>
+          <p data-i18n="about_discounts">Placeholder: explain the discounts cardholders receive at participating restaurants.</p>
+        </div>
+        <div class="info-box">
+          <i class="ti ti-heart"></i>
+          <p data-i18n="about_donation">Placeholder: explain how card purchases support the North Texas Food Bank.</p>
+        </div>
+        <div class="home-note" data-i18n="home_disclaimer">We don't collect any personal information. Please log your visits so we can improve our app!</div>
+      </div>
+    </div>
+
+    <!-- RESTAURANTS (LIST VIEW) -->
+    <div class="tab-pane" id="pane-restaurants">
+      <div class="list-header-wrap">
+        <div class="srch-wrap">
+          <div class="srch-inner">
+            <i class="ti ti-search"></i>
+            <input class="srch-inp" type="text" placeholder="Search restaurants..." id="searchInp" data-i18n-ph="search_restaurants" oninput="filterList()">
+          </div>
+        </div>
+        <div class="chip-row">
+          <div class="chip on" data-type="All" onclick="setChip(this,'All')">All</div>
+          <div class="chip" data-type="Hunan" onclick="setChip(this,'Hunan')">Hunan</div>
+          <div class="chip" data-type="Sichuan" onclick="setChip(this,'Sichuan')">Sichuan</div>
+          <div class="chip" data-type="Chinese" onclick="setChip(this,'Chinese')">Chinese</div>
+          <div class="chip" data-type="Hot Pot" onclick="setChip(this,'Hot Pot')">Hot Pot</div>
+          <div class="chip" data-type="Noodles" onclick="setChip(this,'Noodles')">Noodles</div>
+          <div class="chip" data-type="Ramen" onclick="setChip(this,'Ramen')">Ramen</div>
+          <div class="chip" data-type="Sushi" onclick="setChip(this,'Sushi')">Sushi</div>
+          <div class="chip" data-type="Japanese" onclick="setChip(this,'Japanese')">Japanese</div>
+          <div class="chip" data-type="Boba" onclick="setChip(this,'Boba')">Boba</div>
+          <div class="chip" data-type="Matcha" onclick="setChip(this,'Matcha')">Matcha</div>
+          <div class="chip" data-type="Ice Cream" onclick="setChip(this,'Ice Cream')">Ice Cream</div>
+          <div class="chip" data-type="Tea" onclick="setChip(this,'Tea')">Tea</div>
+          <div class="chip" data-type="Dessert" onclick="setChip(this,'Dessert')">Dessert</div>
+          <div class="chip" data-type="Coffee" onclick="setChip(this,'Coffee')">Coffee</div>
+          <div class="chip" data-type="Beauty" onclick="setChip(this,'Beauty')">Beauty</div>
+        </div>
+      </div>
+      <div class="rlist" id="restList"></div>
+    </div>
+
+    <!-- MAP -->
+    <div class="tab-pane" id="pane-map">
+      <div class="map-full">
+        <div id="map-container"></div>
+        <div class="map-grad"></div>
+        <div class="map-srch">
+          <i class="ti ti-search"></i>
+          <input class="map-srch-inp" type="text" placeholder="Enter City" id="citySearch" data-i18n-ph="enter_city" onkeydown="if(event.key==='Enter')searchCity()">
+        </div>
+        <div class="sheet" id="locSheet">
+          <div class="sheet-handle" id="sheetHandle"><div class="sheet-grip"></div></div>
+          <div class="sheet-head"><span data-i18n="locations">Locations</span><span class="sheet-count" id="locCount"></span></div>
+          <div class="sheet-list" id="mapList"></div>
+          <div class="sheet-note" data-i18n="sheet_note">All participating locations across DFW. No user location data is collected or stored.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INBOX -->
+    <div class="modal-overlay" id="inboxOverlay" onclick="if(event.target===this)closeInbox()">
+      <div class="modal-card inbox-card">
+        <div class="inbox-head">
+          <div class="modal-title" data-i18n="inbox_title">Inbox</div>
+          <button class="inbox-close" onclick="closeInbox()" aria-label="Close"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="inbox-list" id="inboxList"></div>
+      </div>
+    </div>
+
+    <nav class="bot-nav">
+      <button class="nav-btn active" id="nav-home" onclick="switchTab('home',this)"><i class="ti ti-home"></i><span data-i18n="nav_home">Home</span></button>
+      <button class="nav-btn" id="nav-restaurants" onclick="switchTab('restaurants',this)"><i class="ti ti-building-store"></i><span data-i18n="nav_list">List</span></button>
+      <button class="nav-btn" id="nav-map" onclick="switchTab('map',this)"><i class="ti ti-map-pin"></i><span data-i18n="nav_map">Map</span></button>
+    </nav>
+  </div>
+</div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="restaurants.js"></script>
+<script>
+const SUPABASE_URL = 'https://yefbiebycgurlfexlxml.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllZmJpZWJ5Y2d1cmxmZXhseG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0NzM2OTgsImV4cCI6MjEwMjA0OTY5OH0.gmqFW3DSNbsJdpS-3scf0Dk3OfUsxh9w8epnXs7njXE';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let RESTAURANTS = [];
+
+async function loadRestaurants() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('restaurants')
+      .select('*')
+      .order('id', { ascending: true });
+    if (error) throw error;
+    RESTAURANTS = data && data.length ? data : FALLBACK_RESTAURANTS;
+  } catch (e) {
+    console.warn('Falling back to local restaurant list:', e);
+    RESTAURANTS = FALLBACK_RESTAURANTS;
+  }
+}
+
+async function logVisit(restaurantName) {
+  try {
+    const { error } = await supabaseClient.from('visits').insert({ restaurant_name: restaurantName });
+    if (error) throw error;
+  } catch (e) {
+    console.warn('Could not log visit:', e);
+  }
+}
+
+window.addEventListener('load', async function() {
+  try { lang = localStorage.getItem('appLang') || 'en'; } catch (e) {}
+  await loadRestaurants();
+  applyLang();
+  initSheet();
+  const splash = document.getElementById('splash');
+  setTimeout(function() {
+    splash.classList.add('hide');
+    setTimeout(function() { splash.style.display = 'none'; }, 600);
+  }, 1600);
+});
+
+// Paste your free MapTiler key here before shipping (maptiler.com -> sign up -> API keys).
+// While it's empty, the map falls back to Carto Voyager tiles (fine for prototyping only).
+const MAPTILER_KEY = 'cNi83NQcpEGH9P61fAEa';
+
+const I18N = {
+  en: {
+    dc_valid: 'Valid Jan 1 – Dec 31, 2026',
+    dc_holder: 'Community Fundraising Card',
+    home_desc: 'Placeholder description: The Community Fundraising Card gives you exclusive discounts at participating restaurants across DFW, while supporting a great cause. Replace this text with a real description of the card.',
+    about_card: 'About the card',
+    about_discounts: 'Placeholder: explain the discounts cardholders receive at participating restaurants.',
+    about_donation: 'Placeholder: explain how card purchases support the North Texas Food Bank.',
+    search_restaurants: 'Search restaurants...',
+    enter_city: 'Enter City',
+    locations: 'Locations',
+    sheet_note: 'All participating locations across DFW. No user location data is collected or stored.',
+    nav_home: 'Home', nav_list: 'List', nav_map: 'Map',
+    check_in: 'Log visit',
+    thank_you: 'Thank you!',
+    no_results: 'No restaurants found',
+    off: 'off',
+    home_disclaimer: "We don't collect any personal information. Please log your visits so we can improve our app!",
+    inbox_title: 'Inbox',
+    inbox_empty: 'No messages yet'
+  },
+  zh: {
+    dc_valid: '有效期：2026年1月1日至12月31日',
+    dc_holder: '社区募捐卡',
+    home_desc: '占位描述：社区募捐卡让您在 DFW 各参与餐厅享受专属折扣，同时支持公益事业。请将此文字替换为正式的卡片介绍。',
+    about_card: '关于此卡',
+    about_discounts: '占位：介绍持卡人在参与商家可享受的折扣。',
+    about_donation: '占位：介绍购卡款项如何支持北德州食物银行。',
+    search_restaurants: '搜索餐厅…',
+    enter_city: '输入城市',
+    locations: '地点',
+    sheet_note: 'DFW 地区所有参与门店。不会收集或存储用户位置数据。',
+    nav_home: '首页', nav_list: '列表', nav_map: '地图',
+    check_in: '记录到访',
+    thank_you: '谢谢！',
+    no_results: '未找到餐厅',
+    off: '优惠',
+    home_disclaimer: '我们不会收集任何个人信息。请记录您的到访，帮助我们改进这款应用！',
+    inbox_title: '收件箱',
+    inbox_empty: '暂无消息'
+  }
+};
+
+const INBOX_MSGS = [
+  {
+    date: { en: 'Jun 15, 2026', zh: '2026年6月15日' },
+    en: { title: 'Welcome!', body: 'Placeholder: welcome message for new cardholders. Replace with a real announcement.' },
+    zh: { title: '欢迎加入！', body: '占位：给新持卡人的欢迎消息。请替换为正式公告。' }
+  },
+  {
+    date: { en: 'Jun 1, 2026', zh: '2026年6月1日' },
+    en: { title: 'New restaurants added', body: 'Placeholder: announce newly participating restaurants here.' },
+    zh: { title: '新增参与餐厅', body: '占位：在此公布新加入的参与餐厅。' }
+  }
+];
+
+const TYPE_ZH = {
+  'All': '全部', 'Hunan': '湘菜', 'Sichuan': '川菜', 'Chinese': '中餐',
+  'Hot Pot': '火锅', 'Noodles': '面食', 'Ramen': '拉面', 'Sushi': '寿司',
+  'Japanese': '日料', 'Boba': '奶茶', 'Matcha': '抹茶', 'Ice Cream': '冰淇淋',
+  'Tea': '茶饮', 'Dessert': '甜品', 'Coffee': '咖啡', 'Beauty': '美容',
+  'Cafe': '咖啡馆', 'Asian': '亚洲风味', 'Buffet': '自助餐',
+  'Massage': '按摩', 'Spa': '水疗'
+};
+
+let lang = 'en';
+
+function t(key) {
+  return I18N[lang][key] || I18N.en[key] || key;
+}
+
+function tType(ty) {
+  return (lang === 'zh' && TYPE_ZH[ty]) ? TYPE_ZH[ty] : ty;
+}
+
+function setLang(l) {
+  lang = l;
+  try { localStorage.setItem('appLang', l); } catch (e) {}
+  applyLang();
+}
+
+function applyLang() {
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+    el.placeholder = t(el.getAttribute('data-i18n-ph'));
+  });
+  document.querySelectorAll('.chip').forEach(function(el) {
+    el.textContent = tType(el.getAttribute('data-type'));
+  });
+  document.getElementById('segEn').classList.toggle('on', lang === 'en');
+  document.getElementById('segZh').classList.toggle('on', lang === 'zh');
+  renderInbox();
+  filterList();
+  renderMapList();
+}
+
+function renderInbox() {
+  const list = document.getElementById('inboxList');
+  if (!INBOX_MSGS.length) {
+    list.innerHTML = '<div class="inbox-empty">' + t('inbox_empty') + '</div>';
+  } else {
+    list.innerHTML = INBOX_MSGS.map(function(m) {
+      const msg = m[lang] || m.en;
+      return '<div class="inbox-msg">' +
+        '<div class="inbox-msg-title">' + msg.title + '</div>' +
+        '<div class="inbox-msg-date">' + (m.date[lang] || m.date.en) + '</div>' +
+        '<div class="inbox-msg-body">' + msg.body + '</div>' +
+      '</div>';
+    }).join('');
+  }
+  updateInboxDot();
+}
+
+function updateInboxDot() {
+  let seen = 0;
+  try { seen = parseInt(localStorage.getItem('appInboxSeen') || '0', 10) || 0; } catch (e) {}
+  document.getElementById('inboxDot').style.display = INBOX_MSGS.length > seen ? 'block' : 'none';
+}
+
+function openInbox() {
+  document.getElementById('inboxOverlay').classList.add('show');
+  try { localStorage.setItem('appInboxSeen', String(INBOX_MSGS.length)); } catch (e) {}
+  updateInboxDot();
+}
+
+function closeInbox() {
+  document.getElementById('inboxOverlay').classList.remove('show');
+}
+
+let activeFilter = 'All';
+let thanksIdx = null;
+let thanksTimer = null;
+let mapInstance = null;
+let selectedMapIdx = null;
+let markers = [];
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pane-' + tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'map') setTimeout(function() {
+    initMap();
+    mapInstance.invalidateSize();
+  }, 50);
+}
+
+function initMap() {
+  if (mapInstance) return;
+  mapInstance = L.map('map-container', {zoomControl:false})
+    .setView([33.05, -96.82], 10);
+  L.control.zoom({position:'bottomright'}).addTo(mapInstance);
+  if (MAPTILER_KEY) {
+    L.tileLayer('https://api.maptiler.com/maps/dataviz/{z}/{x}/{y}.png?key=' + MAPTILER_KEY, {
+      tileSize:512, zoomOffset:-1, maxZoom:20,
+      attribution:'&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(mapInstance);
+  } else {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom:19, subdomains:'abcd',
+      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(mapInstance);
+  }
+  RESTAURANTS.forEach(function(r, i) {
+    const m = L.circleMarker([r.lat, r.lng], {
+      radius:8, fillColor:'#b52a2e', color:'#ffffff', weight:2, opacity:1, fillOpacity:1
+    }).addTo(mapInstance).on('click', function() { selectLocation(i, true); });
+    markers.push(m);
+  });
+  mapInstance.on('moveend', renderMapList);
+}
+
+function searchCity() {
+  const q = document.getElementById('citySearch').value.trim();
+  if (!q || !mapInstance) return;
+  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(q))
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res && res[0]) mapInstance.setView([+res[0].lat, +res[0].lon], 12);
+    })
+    .catch(function() {});
+}
+
+function selectLocation(idx, pan) {
+  selectedMapIdx = idx;
+  switchTab('map', document.getElementById('nav-map'));
+  renderMapList();
+  document.getElementById('locSheet').classList.remove('expanded');
+  document.getElementById('mapList').scrollTop = 0;
+  setTimeout(function() {
+    updateMarkers();
+    if (pan && mapInstance) {
+      const r = RESTAURANTS[idx];
+      mapInstance.setView([r.lat, r.lng], Math.max(mapInstance.getZoom(), 13));
+    }
+  }, 120);
+}
+
+function updateMarkers() {
+  markers.forEach(function(m, i) {
+    const sel = i === selectedMapIdx;
+    m.setStyle({
+      radius: sel ? 11 : 8,
+      fillColor: sel ? '#8f1f24' : '#b52a2e',
+      color: sel ? '#d4a84b' : '#ffffff',
+      weight: sel ? 3 : 2
+    });
+    if (sel) m.bringToFront();
+  });
+}
+
+function renderMapList() {
+  var list = RESTAURANTS.slice();
+  if (mapInstance) {
+    var b = mapInstance.getBounds();
+    list = list.filter(function(r) { return b.contains([r.lat, r.lng]); });
+  }
+  var highlight = null;
+  if (selectedMapIdx !== null) {
+    var sel = RESTAURANTS[selectedMapIdx];
+    var pos = list.indexOf(sel);
+    if (pos !== -1) {
+      highlight = sel;
+      list.splice(pos, 1);
+      list.unshift(sel);
+    }
+  }
+  document.getElementById('locCount').textContent = lang === 'zh'
+    ? '当前视野内 ' + list.length + ' 个地点'
+    : list.length + ' location' + (list.length !== 1 ? 's' : '') + ' in view';
+  renderRestaurants('mapList', list, highlight);
+}
+
+function initSheet() {
+  const sheet = document.getElementById('locSheet');
+  const handle = document.getElementById('sheetHandle');
+  let dragStartY = null;
+  handle.addEventListener('pointerdown', function(e) { dragStartY = e.clientY; });
+  window.addEventListener('pointerup', function(e) {
+    if (dragStartY === null) return;
+    const dy = e.clientY - dragStartY;
+    if (dy < -20) sheet.classList.add('expanded');
+    else if (dy > 20) sheet.classList.remove('expanded');
+    else sheet.classList.toggle('expanded');
+    dragStartY = null;
+  });
+}
+
+function checkIn(idx) {
+  thanksIdx = idx;
+  logVisit(RESTAURANTS[idx].name);
+  clearTimeout(thanksTimer);
+  thanksTimer = setTimeout(function() {
+    thanksIdx = null;
+    filterList();
+    renderMapList();
+  }, 2000);
+  filterList();
+  renderMapList();
+}
+
+function filterList() {
+  const q = document.getElementById('searchInp').value.toLowerCase();
+  let list = RESTAURANTS;
+  if (activeFilter === 'Beauty') list = list.filter(r => r.category === 'Beauty');
+  else if (activeFilter !== 'All') list = list.filter(r => r.type === activeFilter);
+  if (q) list = list.filter(r => r.name.toLowerCase().includes(q) || r.addr.toLowerCase().includes(q) || r.type.toLowerCase().includes(q));
+  renderRestaurants('restList', list);
+}
+
+function setChip(el, f) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  activeFilter = f;
+  filterList();
+}
+
+function renderRestaurants(cid, list, mapHighlight) {
+  const el = document.getElementById(cid);
+  const showAddr = cid !== 'mapList';
+  if (!list.length) { el.innerHTML = '<div class="no-results">' + t('no_results') + '</div>'; return; }
+  el.innerHTML = list.map(r => {
+    const gi = RESTAURANTS.indexOf(r);
+    const thanked = thanksIdx === gi;
+    const highlighted = mapHighlight && r === mapHighlight;
+    const pcts = (r.discount.match(/\d+/g) || []).map(Number);
+    const pct = pcts.length ? Math.max(...pcts) + '%' : '';
+    const exclHtml = r.excl ? `<div class="rcard-excl"><i class="ti ti-info-circle"></i>${r.excl}</div>` : '';
+    const footer = `<div class="rcard-footer">
+      <button class="btn-ci ${thanked ? 'done' : ''}" ${thanked ? 'disabled' : `onclick="checkIn(${gi})"`}>
+        <i class="ti ti-${thanked ? 'circle-check-filled' : 'login'}"></i>
+        ${thanked ? t('thank_you') : t('check_in')}
+      </button></div>`;
+    return `<div class="rcard${highlighted ? ' map-selected' : ''}">
+      <div class="rcard-main" onclick="selectLocation(${gi}, true)" style="cursor:pointer">
+        <div class="rcard-logo-ph"><i class="ti ti-building-store"></i></div>
+        <div class="rcard-info">
+          <div class="rcard-name">${r.name}</div>
+          <div class="rcard-type">${tType(r.type)}</div>
+          ${showAddr ? `<div class="rcard-addr"><i class="ti ti-map-pin"></i><span>${r.addr}</span></div>` : ''}
+        </div>
+        <div class="rcard-pct"><span class="rcard-pct-num">${pct}</span><span class="rcard-pct-lbl">${t('off')}</span></div>
+      </div>
+      ${footer}
+    </div>${exclHtml}`;
+  }).join('');
+}
+
+</script>
+</body>
+</html>
