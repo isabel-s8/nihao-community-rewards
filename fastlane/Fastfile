@@ -51,12 +51,19 @@ platform :ios do
   lane :beta do
     sync_signing
 
+    # Apple rejects an upload whose build number was already used. The project
+    # has no VERSIONING_SYSTEM for agvtool, so override the setting at archive
+    # time instead. GITHUB_RUN_NUMBER always increases; fall back for local runs.
+    build_number = ENV["GITHUB_RUN_NUMBER"] || Time.now.strftime("%Y%m%d%H%M")
+    UI.message("Building with CFBundleVersion #{build_number}")
+
     gym(
       project: "ios/App/App.xcodeproj",
       scheme: "App",
       export_method: "app-store",
       output_directory: "build",
-      output_name: "App.ipa"
+      output_name: "App.ipa",
+      xcargs: "CURRENT_PROJECT_VERSION=#{build_number}"
     )
 
     ipa_path = lane_context[SharedValues::IPA_OUTPUT_PATH]
