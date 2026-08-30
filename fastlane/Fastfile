@@ -1,14 +1,24 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Fetch or create App Store signing certificate + provisioning profile"
-  lane :sync_signing do
-    api_key = app_store_connect_api_key(
+  # Accepts APP_STORE_CONNECT_API_KEY_CONTENT as either the raw .p8 text or a
+  # base64 blob, so pasting the key file's contents straight into the secret works.
+  def make_api_key
+    content = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"].to_s.strip
+    is_raw_pem = content.include?("BEGIN PRIVATE KEY")
+    UI.message("API key secret detected as #{is_raw_pem ? 'raw .p8 text' : 'base64'}")
+
+    app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
       issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
-      key_content: ENV["APP_STORE_CONNECT_API_KEY_CONTENT"],
-      is_key_content_base64: true
+      key_content: content,
+      is_key_content_base64: !is_raw_pem
     )
+  end
+
+  desc "Fetch or create App Store signing certificate + provisioning profile"
+  lane :sync_signing do
+    api_key = make_api_key
 
     create_keychain(
       name: "ci_keychain",
@@ -57,12 +67,7 @@ platform :ios do
     sh("ls -la '#{ipa_path}'")
     sh("unzip -t '#{ipa_path}' > /dev/null && echo 'ipa zip integrity OK'")
 
-    api_key = app_store_connect_api_key(
-      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-      issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
-      key_content: ENV["APP_STORE_CONNECT_API_KEY_CONTENT"],
-      is_key_content_base64: true
-    )
+    api_key = make_api_key
 
     upload_to_testflight(
       api_key: api_key,
