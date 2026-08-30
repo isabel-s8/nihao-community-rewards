@@ -49,6 +49,14 @@ platform :ios do
       output_name: "App.ipa"
     )
 
+    ipa_path = lane_context[SharedValues::IPA_OUTPUT_PATH]
+
+    # Verify the archive really is a valid ipa (a zip) before handing it to altool,
+    # so a bad build is distinguishable from a bad API key in the upload error.
+    UI.message("IPA at: #{ipa_path}")
+    sh("ls -la '#{ipa_path}'")
+    sh("unzip -t '#{ipa_path}' > /dev/null && echo 'ipa zip integrity OK'")
+
     api_key = app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
       issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
@@ -58,7 +66,7 @@ platform :ios do
 
     upload_to_testflight(
       api_key: api_key,
-      ipa: "build/App.ipa",
+      ipa: ipa_path,
       skip_waiting_for_build_processing: true
     )
   end
