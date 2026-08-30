@@ -14,6 +14,15 @@ platform :ios do
       type: "appstore",
       api_key: api_key
     )
+
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "ios/App/App.xcodeproj",
+      team_id: ENV["APPLE_TEAM_ID"],
+      code_sign_identity: "Apple Distribution",
+      profile_name: "match AppStore com.isabel.lemonrewardscard",
+      targets: "App"
+    )
   end
 
   desc "Build the app and upload it to TestFlight"
