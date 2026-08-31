@@ -97,7 +97,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--stage);display:flex;justi
 .sw-line{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:auto;padding-bottom:4px}
 .sw-line span{color:var(--red-deep);cursor:pointer;font-weight:600}
 
-.app-wrap{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;position:relative;background:linear-gradient(180deg,rgba(143,31,36,.22) 0%,var(--paper) 45%)}
+.app-wrap{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;position:relative;background:linear-gradient(180deg,rgba(143,31,36,.22) 0%,var(--paper) 45%);padding-top:env(safe-area-inset-top)}
 .tab-pane{display:none;flex:1;min-height:0;overflow-y:auto;padding-bottom:calc(64px + max(16px,env(safe-area-inset-bottom)))}
 .tab-pane.active{display:block}
 #pane-restaurants,#pane-map{background:var(--paper)}
